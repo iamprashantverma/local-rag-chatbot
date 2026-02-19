@@ -25,5 +25,6 @@ def login_service(db: Session, login_cred: LoginRequest):
 
     return LoginResponse(
         message=f"Login Successfully {user.email}",
-        access_token=token
+        access_token=token,
+        name=user.name
     )
