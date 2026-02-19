@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import {jwtDecode }from 'jwt-decode';
 import { login as loginAPI } from '../services/api/auth.service';
 import AuthContext from './AuthContext';
 
@@ -8,65 +9,97 @@ const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // 🔁 Restore auth on load
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedAuth = localStorage.getItem('isAuthenticated');
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedToken && storedAuth === 'true') {
-      setToken(storedToken);
-      setIsAuthenticated(true);
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const initAuth = () => {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+
+      if (!storedToken) {
+        setLoading(false);
+        return;
       }
-    }
-    setLoading(false);
+
+      try {
+        const decoded = jwtDecode(storedToken);
+
+        // Check expiration
+        if (decoded.exp * 1000 < Date.now()) {
+          clearAuth();
+        } else {
+          setToken(storedToken);
+          setIsAuthenticated(true);
+
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          }
+        }
+      } catch (error) {
+        clearAuth();
+      }
+
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = async (credentials) => {
     try {
       const response = await loginAPI(credentials);
-      
+
       const authToken = response.data.access_token;
-      const userName = response.data.name;
-      
+
+      const decoded = jwtDecode(authToken);
+
+      const userData = {
+        name: response.data.name,
+        email: decoded.sub || credentials.email,
+      };
+
       setToken(authToken);
-      setUser({ name: userName, email: credentials.email });
+      setUser(userData);
       setIsAuthenticated(true);
-      
+
       localStorage.setItem('token', authToken);
-      localStorage.setItem('user', JSON.stringify({ name: userName, email: credentials.email }));
-      localStorage.setItem('isAuthenticated', 'true');
-      
-      return { success: true, data: response.data };
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.detail || 'Login failed. Please try again.' 
+      return {
+        success: false,
+        error:
+          error.response?.data?.detail ||
+          'Login failed. Please try again.',
       };
     }
   };
 
-  const logout = () => {
+  const clearAuth = () => {
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
   };
 
-  const value = {
-    user,
-    token,
-    isAuthenticated,
-    loading,
-    login,
-    logout,
+  const logout = () => {
+    clearAuth();
   };
+
+  // ⏳ Prevent app render until auth restored
+  if (loading) return null;
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
