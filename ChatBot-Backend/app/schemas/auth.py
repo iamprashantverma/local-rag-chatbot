@@ -18,6 +18,7 @@ class LoginResponse(BaseModel):
     message: str
     access_token: str
     token_type: str = "bearer"
+    name:str
 
 
 class Token(BaseModel):
