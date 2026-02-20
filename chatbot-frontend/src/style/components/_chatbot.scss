@@ -7,7 +7,7 @@
     .chat-messages {
         flex: 1;
         overflow-y: auto;
-        padding: 5px;
+        padding: 3px;
         display: flex;
         justify-content: center;
 
@@ -18,7 +18,7 @@
             background: $white;
             border: 2px solid $border-color;
             border-radius: $border-radius;
-            padding: 20px;
+            padding: 10px;
             box-shadow: $shadow;
             box-sizing: border-box;
             overflow-y: auto;
@@ -52,8 +52,8 @@
                     min-width: 0;
 
                     .ai-icon {
-                        width: 36px;
-                        height: 36px;
+                        width: 46px;
+                        height: 46px;
                         background: $secondary-color;
                         border-radius: 50%;
                         display: flex;
@@ -66,6 +66,7 @@
                 }
 
                 .message-bubble {
+                    border: 1px solid rgb(124, 76, 76);
                     background: $white;
                     color: $text-color;
                     border-radius: $border-radius-lg $border-radius-lg $border-radius-lg 4px;
@@ -73,7 +74,7 @@
             }
 
             .message-bubble {
-                padding: 12px 18px;
+                padding: 8px 13px;
                 max-width: 70%;
                 min-width: 0;
                 word-wrap: break-word;
@@ -114,11 +115,12 @@
     }
 
     .chat-input-container {
-        padding: 10px;
+        padding-bottom: 10px;
+        padding-top: 5px;
         display: flex;
         justify-content: center;
-
         .input-wrapper {
+            background-color: #fbfbfb;
             display: flex;
             gap: 12px;
             width: 100%;
@@ -167,6 +169,14 @@
                 &:disabled {
                     opacity: 0.5;
                     cursor: not-allowed;
+                }
+
+                &.cancel {
+                    background: $error-color;
+
+                    &:hover:not(:disabled) {
+                        background: darken($error-color, 10%);
+                    }
                 }
             }
         }
