@@ -1,8 +1,11 @@
 import api from "./axios";
 
-// Send message to AI chatbot
-export const sendMessageToAI = async (message) => {
-  const response = await api.post("/chat", { message });
+export const sendMessageToAI = async (message, controller) => {
+  const response = await api.post(
+    "/chat",
+    { message },
+    { signal: controller.signal } 
+  );
   return response.data;
 };
 
