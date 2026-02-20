@@ -1,11 +1,17 @@
+// Themes
+@import 'themes';
 
+// Variables
 @import 'variables';
 
+// Animations
 @import 'animations';
 
+// Components
 @import 'components/navbar';
 @import 'components/auth';
 @import 'components/chatbot';
+@import 'components/toast';
 
 *,
 *::before,
@@ -18,5 +24,7 @@
 body {
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
-

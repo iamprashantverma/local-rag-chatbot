@@ -1,0 +1,67 @@
+// Light Theme
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f7fa;
+    --bg-gradient-start: #f5f7fa;
+    --bg-gradient-end: #e9ecef;
+    
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-light: #9ca3af;
+    
+    --border-color: #e5e7eb;
+    --border-hover: #d1d5db;
+    
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-light: #eef2ff;
+    
+    --secondary-color: #f3f4f6;
+    --secondary-hover: #e5e7eb;
+    
+    --message-user-bg: #4f46e5;
+    --message-user-text: #ffffff;
+    --message-ai-bg: #ffffff;
+    --message-ai-text: #1f2937;
+    
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    
+    --navbar-bg: #ffffff;
+    --input-bg: #ffffff;
+}
+
+// Dark Theme
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-gradient-start: #1e293b;
+    --bg-gradient-end: #0f172a;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-light: #94a3b8;
+    
+    --border-color: #334155;
+    --border-hover: #475569;
+    
+    --primary-color: #818cf8;
+    --primary-hover: #6366f1;
+    --primary-light: #312e81;
+    
+    --secondary-color: #334155;
+    --secondary-hover: #475569;
+    
+    --message-user-bg: #818cf8;
+    --message-user-text: #ffffff;
+    --message-ai-bg: #1e293b;
+    --message-ai-text: #f1f5f9;
+    
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    
+    --navbar-bg: #0f172a;
+    --input-bg: #1e293b;
+}

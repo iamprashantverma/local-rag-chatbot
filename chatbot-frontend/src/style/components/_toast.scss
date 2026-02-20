@@ -1,0 +1,26 @@
+.Toastify__toast {
+    border-radius: 12px;
+    font-family: inherit;
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.Toastify__toast--success {
+    background: $success-color;
+    color: #ffffff;
+}
+
+.Toastify__toast--error {
+    background: $error-color;
+    color: #ffffff;
+}
+
+.Toastify__progress-bar {
+    height: 3px;
+}
+
+.Toastify__close-button {
+    color: var(--text-primary);
+    opacity: 0.7;
+}

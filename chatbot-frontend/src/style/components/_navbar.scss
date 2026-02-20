@@ -1,46 +1,94 @@
 .navbar {
-    height: 65px;
-    background: $white;
-    padding: 25px 40px;
-    box-shadow: $shadow;
+    background: var(--navbar-bg);
+    padding: 16px 32px;
+    box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 10;
-    border-bottom: 2px solid $border-color;
+    border-bottom: 1px solid var(--border-color);
 
     h1 {
-        font-size: 26px;
-        color: $text-color;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        &::before {
+            content: '🤖';
+            font-size: 28px;
+        }
     }
 
     .navbar-right {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
+
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 18px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background: var(--secondary-hover);
+                border-color: var(--border-hover);
+                transform: rotate(15deg) scale(1.05);
+            }
+
+            &:active {
+                transform: rotate(15deg) scale(0.95);
+            }
+        }
 
         .user-name {
-            font-size: 18px;
-            color: $text-color;
+            font-size: 14px;
             font-weight: 600;
-            padding: 8px 16px;
-            background: lighten($primary-color, 45%);
-            border-radius: $border-radius-sm;
+            color: var(--text-primary);
+            padding: 10px 18px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            &::before {
+                content: '👤';
+                font-size: 16px;
+            }
         }
 
         .logout-btn {
             padding: 10px 20px;
-            background: $secondary-color;
-            color: $text-color;
-            border: none;
-            border-radius: $border-radius-sm;
-            font-size: 15px;
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: $transition;
+            transition: all 0.2s ease;
 
             &:hover {
-                background: darken($secondary-color, 5%);
+                background: var(--secondary-hover);
+                border-color: var(--border-hover);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+
+            &:active {
+                transform: translateY(0);
             }
         }
     }
