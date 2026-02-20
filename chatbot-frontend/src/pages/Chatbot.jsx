@@ -1,108 +1,113 @@
 import { useState, useEffect, useRef } from 'react';
+import { FiSend, FiX } from 'react-icons/fi';
 import { RiRobot2Fill } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { sendMessageToAI, getChatHistory } from '../services/api/chat.service';
 import Navbar from '../components/Navbar';
+import axios from 'axios';
 
 const Chatbot = () => {
+  const controllerRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     loadChatHistory();
+    
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+    };
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const loadChatHistory = async () => {
     try {
       const history = await getChatHistory();
-      
-      const formattedMessages = history.map((msg, index) => ({
-        id: Date.now() + index,
+      const formatted = history.map((msg, i) => ({
+        id: Date.now() + i,
         type: msg.role === 'human' ? 'user' : 'ai',
         text: msg.content,
       }));
-      
-      setMessages(formattedMessages);
-    }  catch (error) {
-        if (error.response) {
-          toast.error(error.response.data?.detail || 'Signup failed. Please try again.');
-        } else if (error.request) {
-          toast.error('Network error. Please check your internet connection and try again.');
-        } else {
-          toast.error('Something went wrong. Please try again.');
-        }
-    }  finally {
+      setMessages(formatted);
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+    } finally {
       setIsLoadingHistory(false);
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const cancelRequest = () => {
+    console.log('Cancelling request...');
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+      controllerRef.current = null;
+    }
+    setMessages(prev => prev.filter(m => !m.isThinking));
+    setIsLoading(false);
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    if (!inputValue.trim() && !isLoading) return;
 
-    const userMessage = inputValue.trim();
+    if (isLoading) {
+      cancelRequest();
+      return;
+    }
+
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+    controllerRef.current = new AbortController();
+
+    const userText = inputValue.trim();
     setInputValue('');
 
-    const newUserMessage = {id: Date.now(),type: 'user',text: userMessage};
-    setMessages(prev => [...prev, newUserMessage]);
-
-    // Add thinking placeholder
-    const thinkingMessage = {
-      id: Date.now() + 1,
-      type: 'ai',
-      text: 'AI is thinking',
-      isThinking: true,
-    };
-    setMessages(prev => [...prev, thinkingMessage]);
+    setMessages(prev => [
+      ...prev,
+      { id: Date.now(), type: 'user', text: userText },
+      { id: Date.now() + 1, type: 'ai', text: 'AI is thinking', isThinking: true },
+    ]);
 
     setIsLoading(true);
 
     try {
-      const response = await sendMessageToAI(userMessage);
-      
-      const aiResponseText = response.reply || 'No response';
+      const response = await sendMessageToAI(userText, controllerRef.current);
+      const aiText = response.reply || response.response || response.message || 'No response';
 
-      setMessages(prev => {
-        const filtered = prev.filter(msg => !msg.isThinking);
-        return [...filtered,
-          {
-            id: Date.now() + 2,
-            type: 'ai',
-            text: aiResponseText,
-          },
-        ];
-      });
+      setMessages(prev => [
+        ...prev.filter(m => !m.isThinking),
+        { id: Date.now() + 2, type: 'ai', text: aiText },
+      ]);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to get AI response';
-      toast.error(errorMessage);
+      console.log('Error caught:', error);
       
-      setMessages(prev => {
-        const filtered = prev.filter(msg => !msg.isThinking);
-        return [
-          ...filtered,
-          {
-            id: Date.now() + 2,
-            type: 'ai',
-            text: 'Sorry, I encountered an error. Please try again.',
-          },
-        ];
-      });
+      if (axios.isCancel(error) || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+        console.log('Request was cancelled');
+        setMessages(prev => prev.filter(m => !m.isThinking));
+        return;
+      }
+
+      toast.error('Failed to get AI response');
+      setMessages(prev => [
+        ...prev.filter(m => !m.isThinking),
+        { id: Date.now(), type: 'ai', text: 'Sorry, something went wrong. Please try again.' },
+      ]);
     } finally {
       setIsLoading(false);
+      controllerRef.current = null;
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -121,36 +126,37 @@ const Chatbot = () => {
             </div>
           ) : messages.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
-              What’s on the agenda today?
+              No messages yet. Start a conversation!
             </div>
           ) : (
-            messages.map((message) => (
-            <div key={message.id} className={`message ${message.type}`}>
-              {message.type === 'ai' ? (
-                <div className="message-content">
-                  <div className="ai-icon">
-                    <RiRobot2Fill />
+            messages.map(msg => (
+              <div key={msg.id} className={`message ${msg.type}`}>
+                {msg.type === 'ai' ? (
+                  <div className="message-content">
+                    <div className="ai-icon">
+                      <RiRobot2Fill />
+                    </div>
+                    <div className={`message-bubble ${msg.isThinking ? 'thinking' : ''}`}>
+                      {msg.isThinking ? (
+                        <>
+                          AI is thinking
+                          <div className="dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                          </div>
+                        </>
+                      ) : (
+                        msg.text
+                      )}
+                    </div>
                   </div>
-                  <div className={`message-bubble ${message.isThinking ? 'thinking' : ''}`}>
-                    {message.isThinking ? (
-                      <>
-                        AI is thinking
-                        <div className="dots">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
-                      </>
-                    ) : (
-                      message.text
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="message-bubble">{message.text}</div>
-              )}
-            </div>
-          )))}
+                ) : (
+                  <div className="message-bubble">{msg.text}</div>
+                )}
+              </div>
+            ))
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -158,20 +164,29 @@ const Chatbot = () => {
       <div className="chat-input-container">
         <div className="input-wrapper">
           <input
-            type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onChange={e => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type your message..."
             disabled={isLoading}
           />
-          <button
-            className="send-btn"
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isLoading}
-          >
 
-            Send
+          <button
+            className={`send-btn ${isLoading ? 'cancel' : ''}`}
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim() && !isLoading}
+          >
+            {isLoading ? (
+              <>
+                {/* <FiX /> */}
+                Cancel
+              </>
+            ) : (
+              <>
+                {/* <FiSend /> */}
+                Send
+              </>
+            )}
           </button>
         </div>
       </div>
