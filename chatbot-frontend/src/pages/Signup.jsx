@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { signup } from '../services/api/auth.service';
-
+import useAuth from '../contexts/useAuth';
 const Signup = () => {
   const navigate = useNavigate();
+   const {isAuthenticated} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
@@ -14,7 +15,10 @@ const Signup = () => {
     email: '',
     password: ''
   });
-
+  useEffect(()=>{
+      if(isAuthenticated)
+          navigate("/chat");
+    },[])
   const handleChange = (e) => {
     setFormData({
       ...formData,
