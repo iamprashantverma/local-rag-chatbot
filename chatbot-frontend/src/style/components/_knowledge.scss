@@ -1,0 +1,256 @@
+.knowledge-base-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    overflow: hidden;
+
+    .knowledge-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+
+        .knowledge-card {
+            width: 100%;
+            max-width: 700px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+
+            h2 {
+                padding: 20px 24px;
+                font-size: 20px;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin: 0;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .tabs {
+                display: flex;
+                border-bottom: 1px solid var(--border-color);
+
+                .tab {
+                    flex: 1;
+                    padding: 12px 20px;
+                    background: transparent;
+                    border: none;
+                    color: var(--text-secondary);
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    transition: all 0.2s ease;
+                    border-bottom: 2px solid transparent;
+
+                    svg {
+                        font-size: 16px;
+                    }
+
+                    &:hover {
+                        color: var(--text-primary);
+                        background: var(--bg-secondary);
+                    }
+
+                    &.active {
+                        color: var(--primary-color);
+                        border-bottom-color: var(--primary-color);
+                    }
+                }
+            }
+
+            .tab-content {
+                padding: 24px;
+                min-height: 320px;
+
+                .error-msg {
+                    color: $error-color;
+                    font-size: 12px;
+                    margin: 8px 0 0 0;
+                }
+
+                .upload-section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    height: 100%;
+
+                    .upload-box {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        padding: 50px;
+                        border: 2px dashed var(--border-color);
+                        border-radius: 10px;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        flex: 1;
+
+                        &:hover {
+                            border-color: var(--primary-color);
+                            background: var(--primary-light);
+                        }
+
+                        .upload-icon {
+                            font-size: 52px;
+                            color: var(--primary-color);
+                        }
+
+                        p {
+                            font-size: 15px;
+                            font-weight: 500;
+                            color: var(--text-primary);
+                            margin: 0;
+                        }
+
+                        span {
+                            font-size: 13px;
+                            color: var(--text-secondary);
+                        }
+                    }
+
+                    .file-preview {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 16px;
+                        background: var(--bg-secondary);
+                        border: 1px solid var(--border-color);
+                        border-radius: 10px;
+
+                        svg:first-child {
+                            font-size: 28px;
+                            color: var(--primary-color);
+                            flex-shrink: 0;
+                        }
+
+                        .file-info {
+                            flex: 1;
+                            min-width: 0;
+
+                            p {
+                                font-size: 14px;
+                                font-weight: 500;
+                                color: var(--text-primary);
+                                margin: 0 0 2px 0;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+
+                            span {
+                                font-size: 12px;
+                                color: var(--text-secondary);
+                            }
+                        }
+
+                        .remove-btn {
+                            width: 28px;
+                            height: 28px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: transparent;
+                            border: none;
+                            color: var(--text-secondary);
+                            font-size: 18px;
+                            cursor: pointer;
+                            border-radius: 4px;
+                            transition: all 0.2s ease;
+                            flex-shrink: 0;
+
+                            &:hover {
+                                background: $error-color;
+                                color: #ffffff;
+                            }
+                        }
+                    }
+                }
+
+                .text-section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    height: 100%;
+
+                    .text-input {
+                        width: 100%;
+                        height: 200px;
+                        padding: 12px;
+                        background: var(--input-bg);
+                        border: 2px solid var(--border-color);
+                        border-radius: 10px;
+                        color: var(--text-primary);
+                        font-size: 14px;
+                        font-family: inherit;
+                        line-height: 1.5;
+                        resize: none;
+                        outline: none;
+                        transition: all 0.2s ease;
+
+                        &:focus {
+                            border-color: var(--primary-color);
+                        }
+
+                        &::placeholder {
+                            color: var(--text-light);
+                        }
+                    }
+
+                    .text-footer {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+
+                        .char-count {
+                            font-size: 12px;
+                            color: var(--text-secondary);
+                        }
+
+                        .submit-btn {
+                            width: auto;
+                            padding: 10px 24px;
+                        }
+                    }
+                }
+
+                .submit-btn {
+                    width: auto;
+                    align-self: flex-end;
+                    padding: 10px 24px;
+                    background: var(--primary-color);
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+
+                    &:hover:not(:disabled) {
+                        background: var(--primary-hover);
+                        transform: translateY(-1px);
+                    }
+
+                    &:active:not(:disabled) {
+                        transform: translateY(0);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+                }
+            }
+        }
+    }
+}

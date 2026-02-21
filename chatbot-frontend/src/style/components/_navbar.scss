@@ -7,17 +7,50 @@
     align-items: center;
     border-bottom: 1px solid var(--border-color);
 
-    h1 {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--text-primary);
+    .navbar-left {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 32px;
 
-        &::before {
-            content: '🤖';
-            font-size: 28px;
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            &::before {
+                content: '🤖';
+                font-size: 28px;
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+
+            .nav-link {
+                padding: 8px 20px;
+                background: transparent;
+                border: none;
+                color: var(--text-secondary);
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background: var(--secondary-color);
+                    color: var(--text-primary);
+                }
+
+                &.active {
+                    background: var(--primary-color);
+                    color: #ffffff;
+                }
+            }
         }
     }
 

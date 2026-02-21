@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Chatbot from '../pages/Chatbot';
+import KnowledgeBase from '../pages/KnowledgeBase';
 import ProtectedRoute from './ProtectedRoute';
 
 const AppRoutes = () => {
@@ -14,6 +15,13 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Chatbot />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/knowledge" 
+        element={
+          <ProtectedRoute>
+            <KnowledgeBase />
           </ProtectedRoute>
         } 
       />
