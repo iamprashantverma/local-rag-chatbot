@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     SECRET_KEY:str = Field(...,alias="SECRET_KEY") 
     ALGORITHM:str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES :int = 30
-    
+    OLLAMA_BASE_URL: str = Field("http://localhost:11434", alias="OLLAMA_BASE_URL")
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

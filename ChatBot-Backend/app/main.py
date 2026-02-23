@@ -5,7 +5,7 @@ from app.db.base import Base
 from app.db.session import engine 
 
 app = FastAPI()
-origins = ["http://localhost:5173"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

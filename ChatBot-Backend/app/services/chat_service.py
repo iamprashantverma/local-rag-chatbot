@@ -1,4 +1,4 @@
-from langchain_core.runnables import RunnableWithMessageHistory
+# from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.messages import ToolMessage
 from typing import List, Dict
 from app.core.llm import llm
@@ -10,7 +10,8 @@ llm_with_tools = llm.bind_tools(available_tools)
 
 chain = prompt | llm_with_tools
 
-chatbot = RunnableWithMessageHistory(chain, get_session_history, input_messages_key="input", history_messages_key="history")
+#  to be implemented..
+# chatbot = RunnableWithMessageHistory(chain, get_session_history, input_messages_key="input", history_messages_key="history")
 
 
 async def run_chat(message: str, context: str, session_id: str):
@@ -24,9 +25,7 @@ async def run_chat(message: str, context: str, session_id: str):
         "context": context,
         "history": history.messages
     })
-
-    # DO NOT store AI yet
-
+         
     while getattr(response, "tool_calls", None):
 
         for tool_call in response.tool_calls:
