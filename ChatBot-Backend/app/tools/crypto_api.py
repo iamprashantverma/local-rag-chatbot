@@ -5,13 +5,13 @@ BASE_URL = "https://api.coingecko.com/api/v3/simple/price"
 
 def get_crypto_price(coin: str):
     """
-    Fetch live crypto price in USD
+    Fetch live crypto price in INR
     Example input: 'bitcoin', 'ethereum', 'solana'
     """
 
     params = {
         "ids": coin.lower(),
-        "vs_currencies": "usd"
+        "vs_currencies": "inr"
     }
 
     response = requests.get(BASE_URL, params=params, timeout=10)
@@ -24,10 +24,5 @@ def get_crypto_price(coin: str):
 
     return {
         "coin": coin,
-        "price_usd": data[coin.lower()]["usd"]
+        "price_inr": data[coin.lower()]["inr"]
     }
-
-
-
-if __name__ == "__main__":
-    print(get_crypto_price("bitcoin"))

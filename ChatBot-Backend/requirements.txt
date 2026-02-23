@@ -2,8 +2,13 @@ fastapi
 uvicorn
 langchain
 langchain-community
+langchain-ollama
+langchain-core
 chromadb
 sentence-transformers
 pydantic
 pymysql
 passlib[bcrypt]
+requests
+pydantic-settings
+sqlalchemy
