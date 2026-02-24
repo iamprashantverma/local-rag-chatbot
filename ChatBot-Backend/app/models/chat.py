@@ -8,5 +8,7 @@ class Chat(Base):
     id = Column(Integer, primary_key=True, index=True)
     role = Column(String(20))
     content = Column(String(2000))
-    user_email = Column(String(50), ForeignKey("users.email"), nullable=False)  
+    tool_call_id = Column(String(100), nullable=True)
+    user_email = Column(String(50), ForeignKey("users.email"), nullable=False)
+
     user = relationship("User", back_populates="chats")

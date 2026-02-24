@@ -1,67 +1,47 @@
-# from langchain_core.runnables import RunnableWithMessageHistory
-from langchain_core.messages import ToolMessage
 from typing import List, Dict
+from sqlalchemy.orm import Session
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from app.core.llm import llm
 from app.core.prompt import prompt
-from app.core.memory import get_session_history
 from app.tools.langchain_tools import available_tools
+from app.crud.chat import create_chat_by_user_email, get_last_5_chats_by_user_email, get_chats_by_user_email
 
 llm_with_tools = llm.bind_tools(available_tools)
-
 chain = prompt | llm_with_tools
 
-#  to be implemented..
-# chatbot = RunnableWithMessageHistory(chain, get_session_history, input_messages_key="input", history_messages_key="history")
+
+def format_history(db_chats):
+    messages = []
+    for chat in db_chats:
+        if chat.role == "human": messages.append(HumanMessage(content=chat.content))
+        elif chat.role == "ai": messages.append(AIMessage(content=chat.content))
+        elif chat.role == "tool": messages.append(ToolMessage(content=chat.content, tool_call_id=chat.tool_call_id))
+    return messages
 
 
-async def run_chat(message: str, context: str, session_id: str):
-
+async def run_chat(db: Session, message: str, context: str, user_email: str):
     tool_map = {tool.name: tool for tool in available_tools}
-    history = get_session_history(session_id)
-    history.add_user_message(message)
+    previous_chats = get_last_5_chats_by_user_email(db, user_email)
+    history_messages = format_history(previous_chats)
+    create_chat_by_user_email(db, user_email, "human", message)
+    history_messages.append(HumanMessage(content=message))
 
-    response = await chain.ainvoke({
-        "input": message,
-        "context": context,
-        "history": history.messages
-    })
-         
+    response = await chain.ainvoke({"input": message, "context": context, "history": history_messages})
+
     while getattr(response, "tool_calls", None):
-
         for tool_call in response.tool_calls:
-            tool_name = tool_call["name"]
-            tool_args = tool_call.get("args", {})
-            tool_id = tool_call["id"]
-
+            tool_name = tool_call["name"]; tool_args = tool_call.get("args", {}); tool_id = tool_call["id"]
             result = await tool_map[tool_name].ainvoke(tool_args)
+            tool_message = ToolMessage(content=str(result), tool_call_id=tool_id)
+            history_messages.append(tool_message)
+            create_chat_by_user_email(db, user_email, "tool", str(result), tool_id)
 
-            tool_msg = ToolMessage(
-                content=str(result),
-                tool_call_id=tool_id,
-            )
+        response = await chain.ainvoke({"input": message, "context": context, "history": history_messages})
 
-            history.add_message(tool_msg)
-
-        # Call LLM again with updated history
-        response = await chain.ainvoke({
-            "input": message,
-            "context": context,
-            "history": history.messages
-        })
-
-    #  Only store final clean AI message
-    if response.content:
-        history.add_ai_message(response.content)
-
+    if response.content: create_chat_by_user_email(db, user_email, "ai", response.content)
     return response.content
 
 
-def get_user_history(session_id: str) -> List[Dict]:
-    history = get_session_history(session_id)
-    return [
-        {
-            "role": msg.type,
-            "content": msg.content
-        }
-        for msg in history.messages
-    ]
+def get_user_history(db: Session, user_email: str) -> List[Dict]:
+    chats = get_chats_by_user_email(db, user_email)
+    return [{"id":chat.id, "role": chat.role, "content": chat.content} for chat in chats]
