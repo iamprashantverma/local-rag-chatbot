@@ -17,11 +17,19 @@ const KnowledgeBase = () => {
     setError('');
     
     if (file) {
-      const validTypes = ['text/plain', 'application/pdf'];
+      const validTypes = [
+        'application/pdf',
+        'text/plain',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+      ];
+
       if (!validTypes.includes(file.type)) {
-        setError('Only .txt and .pdf files allowed');
+        setError('Only PDF, DOCX, TXT, and Excel files are allowed');
         return;
       }
+
       if (file.size > 10 * 1024 * 1024) {
         setError('File must be less than 10MB');
         return;
@@ -102,7 +110,7 @@ const KnowledgeBase = () => {
                 <input
                   type="file"
                   id="file-input"
-                  accept=".txt,.pdf"
+                  accept=".txt,.pdf,.docx,.xlsx,.xls"
                   onChange={handleFileSelect}
                   style={{ display: 'none' }}
                 />
@@ -111,7 +119,7 @@ const KnowledgeBase = () => {
                   <label htmlFor="file-input" className="upload-box">
                     <FiUpload className="upload-icon" />
                     <p>Select file</p>
-                    <span>.txt or .pdf (max 10MB)</span>
+                    <span>.txt, .pdf, .docx, .xlsx (max 10MB)</span>
                   </label>
                 ) : (
                   <div className="file-preview">
