@@ -8,7 +8,7 @@ router = APIRouter(prefix="/docs", tags=["Documents"])
 
 @router.post("/update", response_model=DocsResponse)
 def update_documents(payload: DocsUpdateRequest):
-    update_docs(payload.content, payload.mode)
+    update_docs(payload.content)
     return DocsResponse(
         status="success",
         message="Documents updated & indexed successfully"
@@ -34,7 +34,7 @@ async def upload_document(file: UploadFile = File(...)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    update_docs(text,"append")
+    update_docs(text)
 
     return DocsResponse(
         status="success",

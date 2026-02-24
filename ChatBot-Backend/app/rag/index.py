@@ -1,20 +1,18 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_core.documents import Document
 
-from app.rag.loader import load_docs
+embeddings = HuggingFaceEmbeddings()
 
-def build_index():
-    docs = load_docs()
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    chunks = splitter.split_documents(docs)
+def ingest_incremental(texts: list[str]):
+    
+    db = Chroma( persist_directory="vectordb", embedding_function=embeddings )
 
-    embeddings = HuggingFaceEmbeddings()
+    documents = [Document(page_content=t) for t in texts]
 
-    db = Chroma.from_documents(chunks,embeddings,persist_directory="vectordb")
-
+    splitter = RecursiveCharacterTextSplitter( chunk_size=500, chunk_overlap=50)
+    chunks = splitter.split_documents(documents)
+    db.add_documents(chunks)
     db.persist()
-
-# if __name__ == "__main__":
-#     build_index()
