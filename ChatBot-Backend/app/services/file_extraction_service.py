@@ -1,6 +1,5 @@
 import tempfile
 import os
-
 import fitz
 from docx import Document
 import pandas as pd
@@ -19,12 +18,18 @@ class FileTextExtractionService:
 
             if suffix == "pdf":
                 text = FileTextExtractionService._extract_pdf(tmp.name)
+
             elif suffix == "docx":
                 text = FileTextExtractionService._extract_docx(tmp.name)
+
             elif suffix in ("xlsx", "xls"):
                 text = FileTextExtractionService._extract_excel(tmp.name)
+
+            elif suffix == "txt":
+                text = FileTextExtractionService._extract_txt(tmp.name)
+
             else:
-                raise ValueError("Only PDF, DOCX, and Excel files are supported")
+                raise ValueError("Only PDF, DOCX, Excel, and TXT files are supported")
 
             if not text.strip():
                 raise ValueError("No readable text found in file")
@@ -54,6 +59,16 @@ class FileTextExtractionService:
         for sheet, df in sheets.items():
             text += df.fillna("").to_string(index=False)
         return text
+
+    @staticmethod
+    def _extract_txt(path: str) -> str:
+        # utf-8 with fallback for messy files
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+        except UnicodeDecodeError:
+            with open(path, "r", encoding="latin-1") as f:
+                return f.read()
 
     @staticmethod
     def _clean(text: str) -> str:
