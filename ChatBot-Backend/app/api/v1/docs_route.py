@@ -1,9 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from sqlalchemy.orm import Session
 
+from app.schemas.resume import Resume
 from app.schemas.docs import DocsUpdateRequest, DocsResponse
 from app.services.docs_service import update_docs
 from app.services.file_extraction_service import FileTextExtractionService
-
+from app.api.deps import get_current_user, get_db
 router = APIRouter(prefix="/docs", tags=["Documents"])
 
 
@@ -14,6 +16,7 @@ def update_documents(payload: DocsUpdateRequest):
         status="success",
         message="Documents updated & indexed successfully"
     )
+
 
 
 @router.post("/upload", response_model=DocsResponse)

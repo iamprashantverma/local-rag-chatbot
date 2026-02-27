@@ -9,7 +9,6 @@ services:
       - ollama
     ports:
       - "8000:8000"   
-    restart: always
 
   mysql:
     image: mysql:8.0
@@ -18,7 +17,7 @@ services:
       - .env
     volumes:
       - mysql_data:/var/lib/mysql
-    restart: always
+
 
   ollama:
     image: ollama/ollama:latest
@@ -27,7 +26,6 @@ services:
       - .env
     volumes:
       - ollama_data:/root/.ollama
-    restart: always
 
 volumes:
   mysql_data:
